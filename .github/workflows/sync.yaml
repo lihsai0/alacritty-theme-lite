@@ -1,0 +1,38 @@
+name: Sync Alacritty Themes
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  sync-upsteam:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest upstream
+        uses: actions/checkout@v4
+        with:
+          repository: alacritty/alacritty-theme
+          path: alacritty-theme
+          fetch-depth: 1
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+        with:
+          path: main
+      - name: Sync themes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp -r alacritty-theme/themes/* main/themes/
+          cd main
+          NEED_UPDATE=$(git diff --quiet | wc -l)
+          if [ $NEED_UPDATE -eq 0 ]; then
+            echo "No changes detected"
+            exit 0
+          fi
+          git add .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "feat: sync themes"
+          git push
+          echo "Themes synced"
