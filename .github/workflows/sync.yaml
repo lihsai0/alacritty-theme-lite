@@ -9,7 +9,7 @@ jobs:
   sync-upsteam:
     runs-on: ubuntu-latest
     steps:
-      - name: Get latest upstream
+      - name: Checkout latest upstream
         uses: actions/checkout@v4
         with:
           repository: alacritty/alacritty-theme
@@ -23,7 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp -r alacritty-theme/themes/* main/themes/
+          rsync -rtv --delete alacritty-theme/themes/ main/themes/
           cd main
           git add .
           NEED_UPDATE=$(git diff --staged | wc -l)
