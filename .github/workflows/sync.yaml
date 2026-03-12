@@ -3,7 +3,7 @@ name: Sync Alacritty Themes
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 3 * * 5"
 
 jobs:
   sync-upsteam:
